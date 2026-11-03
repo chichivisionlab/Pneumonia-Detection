@@ -1,0 +1,27 @@
+# Data (never commit raw datasets)
+data/
+chest_xray/
+*.zip
+*.jpeg
+*.jpg
+*.png
+!reports/figures/*.png
+
+# Models (too large for git)
+models/*.h5
+models/*.keras
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Kaggle credentials (never commit)
+kaggle.json
