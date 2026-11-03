@@ -66,21 +66,29 @@ The model caught **379 of 390 pneumonia cases (97.2% recall)** and missed only 1
 
 ### Figures
 
-**Sample X-rays:** examples of the two classes from the training set.
+**Sample X-rays from the training set.**
 
 ![Sample X-rays](reports/figures/sample_images.png)
 
-**Training and validation curves:** loss and accuracy across epochs, used to check learning and watch for overfitting.
+I plotted a batch of training images with their labels as a first sanity check, to confirm the data loaded correctly and to see what the model is working with. The images are pediatric chest X-rays of varying size, contrast, and positioning, and both classes (NORMAL and PNEUMONIA) are present. This step also surfaces the practical messiness of real medical images (different framing, brightness, and annotation marks such as the "R" label), which is why resizing, normalisation, and augmentation are applied before training.
+
+**Training and validation curves.**
 
 ![Training curves](reports/figures/training_curves.png)
 
-**Confusion matrix (test set):** predictions vs. reality for the ResNet50 model.
+These curves track loss and accuracy across epochs for the transfer-learning model. Training loss falls steadily and training accuracy climbs toward 0.95, so the model fits the training data well. The validation curves tell the more important story: validation loss rises and validation accuracy drops after the first epoch. This is a clear sign of overfitting, and it is driven mainly by the dataset's very small built-in validation folder (only a handful of images), which makes the validation signal noisy and easy to diverge from. Reading this diagnostic is the reason the final judgement of the model is made on the much larger held-out test set rather than on the validation curves, and it motivates the dropout, augmentation, and early stopping used in the pipeline.
+
+**Confusion matrix on the test set.**
 
 ![Confusion matrix](reports/figures/confusion_matrix.png)
 
-**Grad-CAM:** a heatmap showing which regions of an X-ray the model focused on, making its decision inspectable.
+The matrix compares predictions (columns) against the true labels (rows) on the 624-image test set. The model correctly identified 379 of the 390 pneumonia cases (bottom-right) and missed only 11 (bottom-left), which is the high recall the project aims for. Among normal X-rays, 121 were correctly cleared (top-left) but 113 were flagged as pneumonia (top-right). The pattern is deliberate: the model leans toward flagging rather than missing, which in a screening setting is the safer error to make.
+
+**Grad-CAM explainability.**
 
 ![Grad-CAM](reports/figures/grad_cam.png)
+
+Grad-CAM overlays a heatmap on the X-ray showing which regions most influenced the prediction, from blue (low influence) to red (high influence). In this example the model's attention concentrates on the lung field rather than on the image borders or background, which is reassuring: it suggests the prediction is based on the chest region itself rather than on irrelevant artefacts. Making the model inspectable this way is important for a project in a sensitive domain, and it provides a check against the model learning shortcuts.
 
 ## How to run
 
